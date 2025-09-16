@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartSolutions Sprint Board</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script> </head>
+<body>
+
+    <header class="main-header">
+        <h1>SmartSolutions Sprint ⚡</h1>
+        <button id="addTaskBtn" class="add-task-button">+ Nova Tarefa</button>
+    </header>
+
+    <main class="kanban-board">
+        <div class="kanban-column" id="todo" ondragover="event.preventDefault()" ondrop="drop(event)">
+            <h2 class="column-title">A Fazer  backlog</h2>
+            <div class="tasks-container">
+                <div class="task-card" draggable="true" id="task-1">
+                    <p>Visualizar três colunas (A Fazer, Em Andamento, Concluído)</p>
+                    <button class="delete-btn" onclick="deleteTask(this.parentElement)">×</button>
+                </div>
+                <div class="task-card" draggable="true" id="task-2">
+                    <p>Adicionar novas tarefas na coluna "A Fazer"</p>
+                    <button class="delete-btn" onclick="deleteTask(this.parentElement)">×</button>
+                </div>
+            </div>
+        </div>
+        <div class="kanban-column" id="doing" ondragover="event.preventDefault()" ondrop="drop(event)">
+            <h2 class="column-title">Em Andamento 💻</h2>
+            <div class="tasks-container">
+                 <div class="task-card" draggable="true" id="task-3">
+                    <p>Implementar a função de arrastar e soltar (drag and drop)</p>
+                    <button class="delete-btn" onclick="deleteTask(this.parentElement)">×</button>
+                </div>
+            </div>
+        </div>
+        <div class="kanban-column" id="done" ondragover="event.preventDefault()" ondrop="drop(event)">
+            <h2 class="column-title">Concluído ✅</h2>
+            <div class="tasks-container">
+                 <div class="task-card" draggable="true" id="task-4">
+                    <p>Estruturar o HTML e estilizar o layout base do quadro</p>
+                    <button class="delete-btn" onclick="deleteTask(this.parentElement)">×</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="modal" class="modal-overlay">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Criar Nova Tarefa</h2>
+            <textarea id="taskInput" placeholder="Descreva a tarefa..."></textarea>
+            <button id="saveTaskBtn">Salvar Tarefa</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
