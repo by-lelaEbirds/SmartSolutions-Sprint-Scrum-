@@ -20,7 +20,8 @@ document.addEventListener('DOMContentLoaded', () => {
             container.innerHTML = ''; // Clear column before rendering
             state[columnId].forEach((task, index) => {
                 const taskElement = createTaskElement(task);
-                taskElement.style.setProperty('--delay', `${index * 50}ms`);
+                // Staggered animation delay
+                taskElement.style.animationDelay = `${index * 50}ms`;
                 container.appendChild(taskElement);
             });
         });
@@ -56,6 +57,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const emptyState = container.querySelector('.empty-state');
             if(emptyState) {
                 emptyState.classList.toggle('show', taskCount === 0);
+            } else { // Fallback if empty-state div is missing
+                container.querySelector('.empty-state-placeholder').style.display = taskCount === 0 ? 'block' : 'none';
             }
         });
     };
@@ -68,27 +71,33 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => e.target.classList.add('dragging'), 0);
         });
         element.addEventListener('dragend', () => {
-            draggedItem.classList.remove('dragging');
+            if (draggedItem) {
+                draggedItem.classList.remove('dragging');
+            }
             draggedItem = null;
             document.querySelectorAll('.ghost').forEach(g => g.remove());
+            ghost = null; // Reset ghost
             saveState();
         });
     };
 
     const addEditListeners = (element) => {
         element.addEventListener('dblclick', () => {
-            element.querySelector('p').style.display = 'none';
-            const currentText = element.querySelector('p').textContent;
+            const p = element.querySelector('p');
+            if (!p) return; // Already in edit mode
+            p.style.display = 'none';
+            const currentText = p.textContent;
             
             const editInput = document.createElement('textarea');
             editInput.value = currentText;
             element.appendChild(editInput);
             editInput.focus();
+            editInput.style.height = editInput.scrollHeight + 'px'; // Auto-resize
 
             const saveChanges = () => {
                 const newText = editInput.value.trim();
-                element.querySelector('p').textContent = newText;
-                element.querySelector('p').style.display = 'block';
+                p.textContent = newText || currentText; // Revert if empty
+                p.style.display = 'block';
                 element.removeChild(editInput);
                 updateTask(element.dataset.id, newText);
             };
@@ -98,6 +107,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
                     saveChanges();
+                } else if (e.key === 'Escape') {
+                    p.style.display = 'block';
+                    element.removeChild(editInput);
                 }
             });
         });
@@ -170,7 +182,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 break;
             }
         }
-        saveAndRerender(state);
+        saveState(); // Just save, no need to re-render the whole board
     };
 
     // --- LOCAL STORAGE & STATE MANAGEMENT ---
@@ -191,7 +203,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const loadState = () => {
         const savedState = localStorage.getItem('kanbanState');
-        const defaultState = { todo: [], doing: [], done: [] };
+        const defaultState = {
+            todo: [
+                { id: `task-${Date.now()+1}`, text: "Criar o Product Backlog com 7 histórias" },
+                { id: `task-${Date.now()+2}`, text: "Planejar a Sprint e definir o Sprint Backlog" }
+            ],
+            doing: [
+                { id: `task-${Date.now()+3}`, text: "Desenvolver o mini-projeto 'Fluxo'" }
+            ],
+            done: []
+        };
         return savedState ? JSON.parse(savedState) : defaultState;
     };
     
