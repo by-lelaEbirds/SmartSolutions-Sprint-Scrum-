@@ -1,211 +1,165 @@
-/* --- DEFINIÇÃO DE VARIÁVEIS E TEMA --- */
+/* --- DEFINIÇÃO DE VARIÁVEIS --- */
 :root {
-    --bg-color: #0D0D1A;
-    --accent-color: #00F5D4; /* Verde Neon */
-    --accent-glow: rgba(0, 245, 212, 0.5);
-    --text-color: #F0F0F5;
-    --text-muted: #8A8A9E;
-    --glass-bg: rgba(20, 20, 35, 0.5);
-    --glass-border: rgba(255, 255, 255, 0.1);
-    --font-display: 'Orbitron', sans-serif;
+    /* Tema Padrão: Modo Foco (Claro) */
+    --bg-color: #FDFCFB;
+    --column-bg: #F9FAFB;
+    --card-bg: #FFFFFF;
+    --text-color: #1a1a1a;
+    --text-muted: #6b7280;
+    --border-color: #E5E7EB;
+    --accent-color: #7C3AED;
+    --accent-glow: rgba(124, 58, 237, 0.4);
+    --font-display: 'Poppins', sans-serif;
     --font-body: 'Poppins', sans-serif;
+    --header-title-size: 32px;
+    --header-title-shadow: none;
+    --header-title-color: var(--text-color);
     --transition-speed: 0.3s;
 }
 
-/* --- ANIMAÇÃO DE FUNDO CÓSMICO --- */
+body.cosmic-mode {
+    /* Tema Alternativo: Modo Cósmico (Escuro) */
+    --bg-color: #0D0D1A;
+    --column-bg: rgba(20, 20, 35, 0.5);
+    --card-bg: rgba(20, 20, 35, 0.5);
+    --text-color: #F0F0F5;
+    --text-muted: #8A8A9E;
+    --border-color: rgba(255, 255, 255, 0.1);
+    --accent-color: #00F5D4;
+    --accent-glow: rgba(0, 245, 212, 0.5);
+    --font-display: 'Orbitron', sans-serif;
+    --header-title-size: 48px;
+    --header-title-shadow: 0 0 10px var(--accent-glow), 0 0 20px var(--accent-glow);
+    --header-title-color: var(--accent-color);
+}
+
+/* --- ANIMAÇÕES E ESTILOS GERAIS --- */
 @keyframes moveGradient {
     0% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
     100% { background-position: 0% 50%; }
 }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes modal-in { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
 
-.background-animation {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: linear-gradient(45deg, #1a0a2e, #0d0d1a, #0a1f2e);
-    background-size: 400% 400%;
-    animation: moveGradient 20s ease infinite;
-    z-index: -1;
-}
-
-/* --- ESTILOS GERAIS E TIPOGRAFIA --- */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
     font-family: var(--font-body);
     background-color: var(--bg-color);
     color: var(--text-color);
-    line-height: 1.6;
-    -webkit-font-smoothing: antialiased;
-    overflow-x: hidden;
+    transition: background-color var(--transition-speed), color var(--transition-speed);
 }
 
-.app-container {
-    max-width: 1600px;
-    margin: 0 auto;
-    padding: 32px 40px;
+.background-animation {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(45deg, #1a0a2e, #0d0d1a, #0a1f2e);
+    background-size: 400% 400%;
+    animation: moveGradient 20s ease infinite;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity var(--transition-speed);
 }
+body.cosmic-mode .background-animation { opacity: 1; }
 
-/* --- CABEÇALHO EXPRESSIVO --- */
-.main-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-bottom: 32px;
-    border-bottom: 1px solid var(--glass-border);
-}
+.app-container { max-width: 1600px; margin: 0 auto; padding: 32px 40px; }
 
+/* --- CABEÇALHO E TEMAS --- */
+.main-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 32px; border-bottom: 1px solid var(--border-color); transition: border-color var(--transition-speed); }
+.header-left { display: flex; align-items: center; gap: 24px; }
 .header-title {
     font-family: var(--font-display);
-    font-size: 48px; /* Fonte gigante e expressiva */
+    font-size: var(--header-title-size);
     font-weight: 900;
-    color: var(--accent-color);
-    text-shadow: 0 0 10px var(--accent-glow), 0 0 20px var(--accent-glow);
+    color: var(--header-title-color);
+    text-shadow: var(--header-title-shadow);
+    transition: all var(--transition-speed) ease-in-out;
 }
+.theme-switcher input { display: none; }
+.theme-switcher label {
+    display: block; width: 50px; height: 26px;
+    background-color: var(--column-bg); border: 1px solid var(--border-color);
+    border-radius: 26px; cursor: pointer; position: relative;
+    transition: all var(--transition-speed);
+}
+.theme-switcher label::after {
+    content: ''; position: absolute;
+    top: 2px; left: 2px; width: 20px; height: 20px;
+    background-color: var(--card-bg); border: 1px solid var(--border-color);
+    border-radius: 50%;
+    transition: all var(--transition-speed) ease-in-out;
+}
+.theme-switcher input:checked + label { background-color: var(--accent-color); }
+.theme-switcher input:checked + label::after { transform: translateX(24px); }
 
 .add-task-button {
     display: inline-flex; align-items: center; gap: 10px;
     background-color: var(--accent-color);
-    color: #000;
-    border: none; border-radius: 8px;
+    color: var(--bg-color); border: none; border-radius: 8px;
     padding: 12px 24px; font-size: 16px;
-    font-weight: 600; cursor: pointer;
-    transition: all 0.2s ease-out;
+    font-weight: 600; cursor: pointer; transition: all 0.2s ease-out;
 }
-.add-task-button:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 20px var(--accent-glow);
-}
+body.cosmic-mode .add-task-button { color: #000; }
+.add-task-button:hover { transform: scale(1.05); box-shadow: 0 0 20px var(--accent-glow); }
 
-/* --- QUADRO KANBAN COM EFEITO GLASSMORPHISM --- */
-.kanban-board {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: 32px;
-    padding-top: 32px;
-}
-
+/* --- KANBAN E CARDS --- */
+.kanban-board { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 32px; padding-top: 32px; }
 .kanban-column {
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
-    border-radius: 16px;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-    display: flex; flex-direction: column;
+    background: var(--column-bg); border: 1px solid var(--border-color);
+    border-radius: 16px; display: flex; flex-direction: column;
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    transition: all var(--transition-speed);
 }
-
-.column-header {
-    padding: 16px 20px;
-    border-bottom: 1px solid var(--glass-border);
-    display: flex; justify-content: space-between; align-items: center;
-}
-.column-title h2 {
-    font-size: 16px; font-weight: 600; letter-spacing: 1px;
-    color: var(--text-color);
-}
-.task-counter {
-    background-color: rgba(0,0,0,0.2);
-    color: var(--text-muted);
-    font-size: 14px; font-weight: 600;
-    padding: 4px 12px; border-radius: 20px;
-}
-
-.tasks-container {
-    padding: 20px; flex-grow: 1;
-    display: flex; flex-direction: column; gap: 20px;
-    min-height: 250px;
-}
-
-/* --- CARDS FLUTUANTES --- */
+.column-header { padding: 16px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; transition: border-color var(--transition-speed); }
+.column-title h2 { font-size: 16px; font-weight: 600; letter-spacing: 1px; color: var(--text-color); transition: color var(--transition-speed); }
+.task-counter { background-color: var(--bg-color); color: var(--text-muted); font-size: 14px; font-weight: 600; padding: 4px 12px; border-radius: 20px; transition: all var(--transition-speed); }
+.tasks-container { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; gap: 20px; min-height: 250px; }
 .task-card {
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
-    border-radius: 12px;
-    padding: 20px;
-    font-size: 16px; font-weight: 500;
-    cursor: grab;
-    transition: all 0.3s ease;
-    position: relative;
+    background: var(--card-bg); border: 1px solid var(--border-color);
+    border-radius: 12px; padding: 20px; font-size: 16px; font-weight: 500;
+    cursor: grab; transition: all 0.3s ease; position: relative;
     animation: fadeIn 0.5s ease-out forwards;
 }
-.task-card:hover {
-    transform: translateY(-5px);
-    border-color: var(--accent-color);
-    box-shadow: 0 0 15px var(--accent-glow);
-}
+.task-card:hover { transform: translateY(-5px); border-color: var(--accent-color); box-shadow: 0 0 15px var(--accent-glow); }
 .task-card.dragging { opacity: 0.1; transform: scale(1.02) rotate(3deg); }
-.ghost {
-    height: 80px; background: rgba(0, 245, 212, 0.1);
-    border: 2px dashed var(--accent-color);
-    border-radius: 12px;
-}
+.ghost { height: 80px; background: rgba(124, 58, 237, 0.1); border: 2px dashed var(--accent-color); border-radius: 12px; }
+body.cosmic-mode .ghost { background: rgba(0, 245, 212, 0.1); }
 .delete-btn {
     position: absolute; top: 8px; right: 8px; width: 28px; height: 28px;
     display: flex; align-items: center; justify-content: center;
-    background: rgba(0,0,0,0.2); border: 1px solid var(--glass-border);
+    background: var(--column-bg); border: 1px solid var(--border-color);
     color: var(--text-muted); font-size: 20px; cursor: pointer; border-radius: 50%;
     opacity: 0; transition: all 0.2s ease;
 }
 .task-card:hover .delete-btn { opacity: 1; }
-.delete-btn:hover { background-color: var(--accent-color); color: #000; }
-.task-card textarea {
-    width: 100%; border: 1px solid var(--accent-color);
-    border-radius: 8px; padding: 16px; font-family: inherit;
-    font-size: 16px; resize: none;
-    background-color: var(--bg-color); color: var(--text-color);
-}
-.empty-state {
-    display: none; text-align: center; color: var(--text-muted);
-    padding: 40px 20px; border: 2px dashed var(--glass-border);
-    border-radius: 12px; margin: auto 0;
-}
+.delete-btn:hover { background-color: #FEE2E2; color: #EF4444; }
+body.cosmic-mode .delete-btn:hover { background-color: var(--accent-color); color: #000; }
+.task-card textarea { width: 100%; border: 1px solid var(--accent-color); border-radius: 8px; padding: 16px; font-family: inherit; font-size: 16px; resize: none; background-color: var(--bg-color); color: var(--text-color); }
+.empty-state { display: none; text-align: center; color: var(--text-muted); padding: 40px 20px; border: 2px dashed var(--border-color); border-radius: 12px; margin: auto 0; transition: all var(--transition-speed); }
 .empty-state.show { display: block; }
 
 /* --- MODAL --- */
-.modal-overlay {
-    position: fixed; inset: 0; background-color: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(5px);
-    display: flex; justify-content: center; align-items: center;
-    opacity: 0; visibility: hidden; transition: all 0.3s ease;
-    z-index: 1000;
-}
+.modal-overlay { position: fixed; inset: 0; background-color: rgba(0, 0, 0, 0.7); backdrop-filter: blur(5px); display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: all 0.3s ease; z-index: 1000; }
 .modal-overlay.show { opacity: 1; visibility: visible; }
 .modal-content {
-    background: var(--glass-bg); border: 1px solid var(--glass-border);
-    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-    padding: 32px 40px; border-radius: 16px;
-    width: 90%; max-width: 550px; position: relative;
-    animation: modal-in 0.3s ease-out forwards;
+    background: var(--bg-color); border: 1px solid var(--border-color);
+    padding: 32px 40px; border-radius: 16px; width: 90%; max-width: 550px;
+    position: relative; animation: modal-in 0.3s ease-out forwards;
+    transition: all var(--transition-speed);
 }
+body.cosmic-mode .modal-content { background: var(--column-bg); }
 .close-modal {
     position: absolute; top: 12px; right: 12px;
-    background: none; border: none; font-size: 32px;
-    color: var(--text-muted); cursor: pointer;
+    background: none; border: none;
+    font-size: 24px; /* TAMANHO DO "X" CORRIGIDO */
+    line-height: 1;
+    color: var(--text-muted); cursor: pointer; transition: color var(--transition-speed);
 }
-.modal-content h2 {
-    text-align: center; font-family: var(--font-display);
-    font-size: 24px; color: var(--accent-color);
-    margin-bottom: 24px; letter-spacing: 1px;
-}
-.modal-content textarea {
-    width: 100%; height: 120px; background-color: rgba(0,0,0,0.2);
-    border: 1px solid var(--glass-border); border-radius: 12px;
-    padding: 16px; color: var(--text-color); font-family: inherit;
-    font-size: 16px; resize: vertical; margin-bottom: 24px;
-}
-.modal-content textarea:focus {
-    outline: none; border-color: var(--accent-color);
-    box-shadow: 0 0 10px var(--accent-glow);
-}
-.modal-content button {
-    width: 100%; padding: 16px; background-color: var(--accent-color);
-    color: #000; border: none; border-radius: 8px;
-    font-size: 18px; font-weight: 600; cursor: pointer; letter-spacing: 1px;
-    transition: all 0.2s ease-out;
-}
-.modal-content button:hover {
-    transform: scale(1.02);
-    box-shadow: 0 0 20px var(--accent-glow);
-}
+.close-modal:hover { color: var(--text-color); }
+.modal-content h2 { text-align: center; font-family: var(--font-display); font-size: 24px; color: var(--header-title-color); margin-bottom: 24px; letter-spacing: 1px; transition: color var(--transition-speed); }
+.modal-content textarea { width: 100%; height: 120px; background-color: var(--bg-color); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px; color: var(--text-color); font-family: inherit; font-size: 16px; resize: vertical; margin-bottom: 24px; transition: all var(--transition-speed); }
+body.cosmic-mode .modal-content textarea { background-color: rgba(0,0,0,0.2); }
+.modal-content textarea:focus { outline: none; border-color: var(--accent-color); box-shadow: 0 0 10px var(--accent-glow); }
+.modal-content button { width: 100%; padding: 16px; background-color: var(--accent-color); color: var(--bg-color); border: none; border-radius: 8px; font-size: 18px; font-weight: 600; cursor: pointer; letter-spacing: 1px; transition: all 0.2s ease-out; }
+body.cosmic-mode .modal-content button { color: #000; }
+.modal-content button:hover { transform: scale(1.02); box-shadow: 0 0 20px var(--accent-glow); }
