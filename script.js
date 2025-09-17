@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
             [...container.children].forEach(child => { if (!child.classList.contains('empty-state')) container.removeChild(child); });
             state[columnId].forEach((task, index) => {
                 const taskElement = createTaskElement(task);
-                taskElement.style.setProperty('--delay', `${index * 70}ms`); // Animação de entrada
+                taskElement.style.setProperty('--delay', `${index * 70}ms`);
                 container.appendChild(taskElement);
             });
         });
@@ -52,7 +52,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const updateCountersAndEmptyStates = () => { document.querySelectorAll('.kanban-column').forEach(column => { const container = column.querySelector('.tasks-container'); const taskCount = container.querySelectorAll('.task-card').length; column.querySelector('.task-counter').textContent = taskCount; const emptyState = column.querySelector('.empty-state'); if(emptyState) emptyState.classList.toggle('show', taskCount === 0); }); };
 
     // --- EVENT HANDLERS ---
-    const addDragListeners = (element) => { element.addEventListener('dragstart', e => { draggedItem = e.target; setTimeout(() => e.target.classList.add('dragging'), 0); }); element.addEventListener('dragend', () => { if (draggedItem) draggedItem.classList.remove('dragging'); draggedItem = null; document.querySelectorAll('.ghost').forEach(g => g.remove()); ghost = null; saveState(); }); };
+    const addDragListeners = (element) => {
+        element.addEventListener('dragstart', e => { draggedItem = e.target; setTimeout(() => e.target.classList.add('dragging'), 0); });
+        element.addEventListener('dragend', () => {
+            if (draggedItem) draggedItem.classList.remove('dragging');
+            draggedItem = null;
+            document.querySelectorAll('.ghost').forEach(g => g.remove());
+            ghost = null;
+            // CORREÇÃO DO BUG: Adicionado para atualizar a UI após o drop
+            updateCountersAndEmptyStates(); 
+            saveState();
+        });
+    };
     const addEditListeners = (element) => { element.addEventListener('dblclick', () => { if (element.querySelector('textarea')) return; const p = element.querySelector('p'); p.style.display = 'none'; const currentText = p.textContent; const editInput = document.createElement('textarea'); editInput.value = currentText; element.appendChild(editInput); editInput.focus(); editInput.style.height = 'auto'; editInput.style.height = editInput.scrollHeight + 'px'; const saveChanges = () => { const newText = editInput.value.trim(); p.textContent = newText || currentText; p.style.display = 'block'; if(element.contains(editInput)) element.removeChild(editInput); updateTask(element.dataset.id, newText); }; editInput.addEventListener('blur', saveChanges); editInput.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); saveChanges(); } else if (e.key === 'Escape') { p.style.display = 'block'; if(element.contains(editInput)) element.removeChild(editInput); } }); }); };
     taskContainers.forEach(container => { container.addEventListener('dragover', e => { e.preventDefault(); const afterElement = getDragAfterElement(container, e.clientY); if (!ghost) { ghost = document.createElement('div'); ghost.classList.add('ghost'); } if (afterElement == null) container.appendChild(ghost); else container.insertBefore(ghost, afterElement); }); container.addEventListener('drop', e => { e.preventDefault(); if (draggedItem) e.currentTarget.insertBefore(draggedItem, ghost); }); });
     const getDragAfterElement = (container, y) => { const draggableElements = [...container.querySelectorAll('.task-card:not(.dragging)')]; return draggableElements.reduce((closest, child) => { const box = child.getBoundingClientRect(); const offset = y - box.top - box.height / 2; if (offset < 0 && offset > closest.offset) return { offset: offset, element: child }; else return closest; }, { offset: Number.NEGATIVE_INFINITY }).element; };
@@ -78,7 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
     saveTaskBtn.addEventListener('click', addTask);
     
     // Initialize Theme
-    const savedTheme = localStorage.getItem('theme') || 'cosmic'; // Inicia no modo cósmico por padrão
+    const savedTheme = localStorage.getItem('theme') || 'cosmic';
     applyTheme(savedTheme);
     
     renderBoard();
