@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fluxo — Edição Cósmica</title>
+    <title>Fluxo — Painel Ágil</title>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,7 +15,13 @@
 
     <div class="app-container">
         <header class="main-header">
-            <h1 class="header-title">FLUXO</h1>
+            <div class="header-left">
+                <h1 class="header-title">FLUXO</h1>
+                <div class="theme-switcher">
+                    <input type="checkbox" id="themeToggle">
+                    <label for="themeToggle" title="Alternar Tema"></label>
+                </div>
+            </div>
             <button id="addTaskBtn" class="add-task-button">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                 <span>Nova Tarefa</span>
@@ -25,41 +31,29 @@
         <main class="kanban-board">
             <div class="kanban-column" id="todo">
                 <div class="column-header">
-                    <div class="column-title">
-                        <h2>A FAZER</h2>
-                    </div>
+                    <div class="column-title"><h2>A FAZER</h2></div>
                     <span class="task-counter">0</span>
                 </div>
                 <div class="tasks-container" data-column-id="todo">
-                    <div class="empty-state">
-                        <p>Nenhuma tarefa pendente.</p>
-                    </div>
+                    <div class="empty-state"><p>Nenhuma tarefa pendente.</p></div>
                 </div>
             </div>
             <div class="kanban-column" id="doing">
                 <div class="column-header">
-                    <div class="column-title">
-                        <h2>EM ANDAMENTO</h2>
-                    </div>
+                    <div class="column-title"><h2>EM ANDAMENTO</h2></div>
                     <span class="task-counter">0</span>
                 </div>
                 <div class="tasks-container" data-column-id="doing">
-                    <div class="empty-state">
-                        <p>Arraste uma tarefa aqui.</p>
-                    </div>
+                    <div class="empty-state"><p>Arraste uma tarefa aqui.</p></div>
                 </div>
             </div>
             <div class="kanban-column" id="done">
                 <div class="column-header">
-                    <div class="column-title">
-                        <h2>CONCLUÍDO</h2>
-                    </div>
+                    <div class="column-title"><h2>CONCLUÍDO</h2></div>
                     <span class="task-counter">0</span>
                 </div>
                 <div class="tasks-container" data-column-id="done">
-                    <div class="empty-state">
-                        <p>Nenhuma tarefa concluída.</p>
-                    </div>
+                    <div class="empty-state"><p>Nenhuma tarefa concluída.</p></div>
                 </div>
             </div>
         </main>
