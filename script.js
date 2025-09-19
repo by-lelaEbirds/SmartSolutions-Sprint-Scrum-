@@ -27,6 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const state = loadState();
         Object.keys(state).forEach(columnId => {
             const container = document.querySelector(`[data-column-id="${columnId}"]`);
+            if (!container) return;
             [...container.children].forEach(child => { if (!child.classList.contains('empty-state')) container.removeChild(child); });
             state[columnId].forEach((task, index) => {
                 const taskElement = createTaskElement(task);
@@ -42,8 +43,17 @@ document.addEventListener('DOMContentLoaded', () => {
         element.classList.add('task-card');
         element.draggable = true;
         element.dataset.id = task.id;
-        element.innerHTML = `<p>${task.text}</p><button class="delete-btn">&times;</button>`;
-        element.querySelector('.delete-btn').addEventListener('click', () => deleteTask(task.id));
+        
+        const p = document.createElement('p');
+        p.textContent = task.text;
+        element.appendChild(p);
+        
+        const deleteBtn = document.createElement('button');
+        deleteBtn.classList.add('delete-btn');
+        deleteBtn.innerHTML = '&times;';
+        element.appendChild(deleteBtn);
+
+        deleteBtn.addEventListener('click', () => deleteTask(task.id));
         addDragListeners(element);
         addEditListeners(element);
         return element;
@@ -59,7 +69,6 @@ document.addEventListener('DOMContentLoaded', () => {
             draggedItem = null;
             document.querySelectorAll('.ghost').forEach(g => g.remove());
             ghost = null;
-            // CORREÇÃO DO BUG: Adicionado para atualizar a UI após o drop
             updateCountersAndEmptyStates(); 
             saveState();
         });
@@ -74,8 +83,36 @@ document.addEventListener('DOMContentLoaded', () => {
     const updateTask = (taskId, newText) => { let state = loadState(); for (const columnId in state) { const task = state[columnId].find(task => task.id === taskId); if (task) { task.text = newText; break; } } saveState(state); };
 
     // --- LOCAL STORAGE & STATE MANAGEMENT ---
-    const saveState = (state = null) => { if (!state) { state = { todo: [], doing: [], done: [] }; taskContainers.forEach(container => { const columnId = container.dataset.columnId; container.querySelectorAll('.task-card').forEach(card => { state[columnId].push({ id: card.dataset.id, text: card.querySelector('p').textContent }); }); }); } localStorage.setItem('kanbanState', JSON.stringify(state)); };
-    const loadState = () => { const savedState = localStorage.getItem('kanbanState'); const defaultState = { todo: [ { id: `task-1`, text: "Analisar as novas tendências de design para o projeto." } ], doing: [ { id: `task-4`, text: "Implementar o novo layout com tipografia expressiva e fundo animado." } ], done: [ { id: `task-5`, text: "Revisar o artigo de inspiração e definir a direção de arte." } ] }; const state = savedState ? JSON.parse(savedState) : defaultState; if (!savedState) saveState(state); return state; };
+    const saveState = (state = null) => { if (!state) { state = { todo: [], doing: [], done: [] }; taskContainers.forEach(container => { const columnId = container.dataset.columnId; if (!state[columnId]) state[columnId] = []; container.querySelectorAll('.task-card').forEach(card => { state[columnId].push({ id: card.dataset.id, text: card.querySelector('p').textContent }); }); }); } localStorage.setItem('kanbanStateConecta', JSON.stringify(state)); };
+    const loadState = () => {
+        const savedState = localStorage.getItem('kanbanStateConecta');
+        // --- TAREFAS DO PROJETO CONECTA+ ---
+        const defaultState = {
+            todo: [
+                { id: `task-conecta-1`, text: "Implementar badges de conquistas no perfil do prestador" },
+                { id: `task-conecta-2`, text: "Criar dashboard do prestador para ver novos pedidos" },
+                { id: `task-conecta-3`, text: "Ajustar responsividade da plataforma para tablets" },
+                { id: `task-conecta-4`, text: "Testar fluxo de avaliação em múltiplos navegadores (QA)" },
+                { id: `task-conecta-5`, text: "[V2.0] Desenvolver algoritmo de 'match' inteligente" },
+                { id: `task-conecta-6`, text: "[BACKLOG] Integração com Login Social (Google)" }
+            ],
+            doing: [
+                { id: `task-conecta-7`, text: "Finalizar fluxo de 'Novo Pedido' com upload de imagens" },
+                { id: `task-conecta-8`, text: "Desenvolver sistema de avaliação com nota e comentário" },
+                { id: `task-conecta-9`, text: "Implementar tema claro/escuro (Dark Mode)" }
+            ],
+            done: [
+                { id: `task-conecta-10`, text: "Criar sistema de Login e Autenticação (front-end)" },
+                { id: `task-conecta-11`, text: "Desenvolver página de perfil do prestador (estática)" },
+                { id: `task-conecta-12`, text: "Criar dashboard do cliente para visualização de pedidos" },
+                { id: `task-conecta-13`, text: "Desenvolver página 'Encontrar Prestadores'" },
+                { id: `task-conecta-14`, text: "Estruturar o projeto (HTML base, CSS, JS)" }
+            ]
+        };
+        const state = savedState ? JSON.parse(savedState) : defaultState;
+        if (!savedState) saveState(state);
+        return state; 
+    };
     const saveAndRerender = (state) => { saveState(state); renderBoard(); };
 
     // --- MODAL ---
@@ -88,7 +125,6 @@ document.addEventListener('DOMContentLoaded', () => {
     modal.addEventListener('click', e => (e.target === modal) && closeModal());
     saveTaskBtn.addEventListener('click', addTask);
     
-    // Initialize Theme
     const savedTheme = localStorage.getItem('theme') || 'cosmic';
     applyTheme(savedTheme);
     
